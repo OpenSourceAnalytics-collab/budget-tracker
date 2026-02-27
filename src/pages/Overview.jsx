@@ -6,6 +6,7 @@ import { Wallet, PiggyBank, CreditCard, TrendingUp } from 'lucide-react';
 export function Overview() {
   const { data } = useAppData();
   const { budget, savings, debt } = data;
+  const currency = data.settings?.currency || 'USD';
 
   const totalPlanned = budget.categories.reduce((s, c) => s + c.planned, 0);
   const totalSpent = budget.categories.reduce((s, c) => s + c.spent, 0);
@@ -17,25 +18,31 @@ export function Overview() {
   const cards = [
     {
       title: 'Monthly income',
-      value: formatCurrency(budget.monthlyIncome),
+      value: formatCurrency(budget.monthlyIncome, currency),
       icon: Wallet,
-      sub: totalPlanned > 0 ? `Planned spending: ${formatCurrency(totalPlanned)}` : null,
+      sub:
+        totalPlanned > 0
+          ? `Planned spending: ${formatCurrency(totalPlanned, currency)}`
+          : null,
     },
     {
       title: 'Spent this month',
-      value: formatCurrency(totalSpent),
+      value: formatCurrency(totalSpent, currency),
       icon: TrendingUp,
       sub: totalPlanned > 0 ? `${((totalSpent / totalPlanned) * 100).toFixed(0)}% of planned` : null,
     },
     {
       title: 'Total savings',
-      value: formatCurrency(totalSavings),
+      value: formatCurrency(totalSavings, currency),
       icon: PiggyBank,
-      sub: totalSavingsTarget > 0 ? `of ${formatCurrency(totalSavingsTarget)} goal` : null,
+      sub:
+        totalSavingsTarget > 0
+          ? `of ${formatCurrency(totalSavingsTarget, currency)} goal`
+          : null,
     },
     {
       title: 'Total debt',
-      value: formatCurrency(totalDebt),
+      value: formatCurrency(totalDebt, currency),
       icon: CreditCard,
       sub: debt.length > 0 ? `${debt.length} account(s)` : null,
     },
@@ -78,7 +85,7 @@ export function Overview() {
                     <div className="mb-1 flex items-center justify-between text-sm">
                       <span className="font-medium text-content">{cat.name}</span>
                       <span className="tabular-nums text-content-muted">
-                        {formatCurrency(cat.spent)} / {formatCurrency(cat.planned)}
+                        {formatCurrency(cat.spent, currency)} / {formatCurrency(cat.planned, currency)}
                       </span>
                     </div>
                     <div className="h-2 w-full overflow-hidden rounded-full bg-surface-muted">
@@ -105,11 +112,11 @@ export function Overview() {
             <p className="text-3xl font-semibold tabular-nums text-content">
               {netFromBudget >= 0 ? (
                 <span className="text-green-600 dark:text-green-400">
-                  +{formatCurrency(netFromBudget)}
+                  +{formatCurrency(netFromBudget, currency)}
                 </span>
               ) : (
                 <span className="text-red-600 dark:text-red-400">
-                  {formatCurrency(netFromBudget)}
+                  {formatCurrency(netFromBudget, currency)}
                 </span>
               )}
             </p>
@@ -124,11 +131,11 @@ export function Overview() {
             <p className="text-3xl font-semibold tabular-nums text-content">
               {totalSavings - totalDebt >= 0 ? (
                 <span className="text-green-600 dark:text-green-400">
-                  {formatCurrency(totalSavings - totalDebt)}
+                  {formatCurrency(totalSavings - totalDebt, currency)}
                 </span>
               ) : (
                 <span className="text-red-600 dark:text-red-400">
-                  {formatCurrency(totalSavings - totalDebt)}
+                  {formatCurrency(totalSavings - totalDebt, currency)}
                 </span>
               )}
             </p>

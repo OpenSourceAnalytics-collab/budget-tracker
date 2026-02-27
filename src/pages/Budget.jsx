@@ -12,6 +12,7 @@ import { Wallet, Plus, Pencil, Trash2 } from 'lucide-react';
 export function Budget() {
   const { data, updateBudget, addCategory, updateCategory, removeCategory } = useAppData();
   const { budget } = data;
+  const currency = data.settings?.currency || 'USD';
   const [incomeModal, setIncomeModal] = useState(false);
   const [categoryModal, setCategoryModal] = useState(false);
   const [editingCategory, setEditingCategory] = useState(null);
@@ -71,7 +72,7 @@ export function Budget() {
         />
         <CardContent>
           <p className="text-2xl font-semibold tabular-nums text-content">
-            {formatCurrency(budget.monthlyIncome)}
+            {formatCurrency(budget.monthlyIncome, currency)}
           </p>
         </CardContent>
       </Card>
@@ -125,7 +126,7 @@ export function Budget() {
                       className="mt-2"
                     />
                     <p className="mt-1 font-mono text-sm tabular-nums text-content-muted">
-                      {formatCurrency(cat.spent)} / {formatCurrency(cat.planned)}
+                      {formatCurrency(cat.spent, currency)} / {formatCurrency(cat.planned, currency)}
                     </p>
                   </div>
                   <div className="flex gap-2">
@@ -169,7 +170,7 @@ export function Budget() {
         }
       >
         <Input
-          label="Amount"
+          label={`Amount (${currency})`}
           type="number"
           min={0}
           step={1}
@@ -201,14 +202,14 @@ export function Budget() {
             placeholder="e.g. Food, Transport"
           />
           <Input
-            label="Planned amount ($)"
+            label={`Planned amount (${currency})`}
             type="number"
             min={0}
             value={catPlanned}
             onChange={(e) => setCatPlanned(e.target.value)}
           />
           <Input
-            label="Spent so far ($)"
+            label={`Spent so far (${currency})`}
             type="number"
             min={0}
             value={catSpent}
