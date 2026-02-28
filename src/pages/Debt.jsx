@@ -10,6 +10,7 @@ import { CreditCard, Plus, Pencil, Trash2 } from 'lucide-react';
 
 export function Debt() {
   const { data, addDebt, updateDebt, removeDebt } = useAppData();
+  const currency = data.settings?.currency || 'USD';
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState(null);
   const [name, setName] = useState('');
@@ -57,7 +58,7 @@ export function Debt() {
           <CardHeader title="Total debt" />
           <CardContent>
             <p className="text-2xl font-semibold tabular-nums text-red-600 dark:text-red-400">
-              {formatCurrency(totalDebt)}
+              {formatCurrency(totalDebt, currency)}
             </p>
             <p className="mt-1 text-sm text-content-muted">
               Across {data.debt.length} account{data.debt.length !== 1 ? 's' : ''}.
@@ -94,11 +95,11 @@ export function Debt() {
                   <div>
                     <p className="font-medium text-content">{item.name}</p>
                     <p className="mt-1 font-mono text-lg tabular-nums text-content">
-                      {formatCurrency(item.balance)}
+                      {formatCurrency(item.balance, currency)}
                     </p>
                     <div className="mt-2 flex flex-wrap gap-4 text-sm text-content-muted">
                       <span>APR: {formatPercent(item.interestRate)}</span>
-                      <span>Min. payment: {formatCurrency(item.minPayment)}</span>
+                      <span>Min. payment: {formatCurrency(item.minPayment, currency)}</span>
                     </div>
                   </div>
                   <div className="flex gap-2">
@@ -148,7 +149,7 @@ export function Debt() {
             placeholder="e.g. Credit card, Car loan"
           />
           <Input
-            label="Current balance ($)"
+            label={`Current balance (${currency})`}
             type="number"
             min={0}
             value={balance}
@@ -163,7 +164,7 @@ export function Debt() {
             onChange={(e) => setInterestRate(e.target.value)}
           />
           <Input
-            label="Minimum payment ($)"
+            label={`Minimum payment (${currency})`}
             type="number"
             min={0}
             value={minPayment}

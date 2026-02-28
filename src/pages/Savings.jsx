@@ -11,6 +11,7 @@ import { PiggyBank, Plus, Pencil, Trash2 } from 'lucide-react';
 
 export function Savings() {
   const { data, addSavingsGoal, updateSavingsGoal, removeSavingsGoal } = useAppData();
+  const currency = data.settings?.currency || 'USD';
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState(null);
   const [name, setName] = useState('');
@@ -68,7 +69,7 @@ export function Savings() {
           <CardHeader title="Total savings" />
           <CardContent>
             <p className="text-2xl font-semibold tabular-nums text-content">
-              {formatCurrency(totalCurrent)}
+              {formatCurrency(totalCurrent, currency)}
             </p>
             {totalTarget > 0 && (
               <ProgressBar
@@ -121,7 +122,7 @@ export function Savings() {
                       className="mt-2"
                     />
                     <p className="mt-1 font-mono text-sm tabular-nums text-content-muted">
-                      {formatCurrency(goal.currentAmount)} / {formatCurrency(goal.targetAmount)}
+                      {formatCurrency(goal.currentAmount, currency)} / {formatCurrency(goal.targetAmount, currency)}
                     </p>
                   </div>
                   <div className="flex gap-2">
@@ -171,14 +172,14 @@ export function Savings() {
             placeholder="e.g. Emergency fund"
           />
           <Input
-            label="Target amount ($)"
+            label={`Target amount (${currency})`}
             type="number"
             min={0}
             value={targetAmount}
             onChange={(e) => setTargetAmount(e.target.value)}
           />
           <Input
-            label="Current amount ($)"
+            label={`Current amount (${currency})`}
             type="number"
             min={0}
             value={currentAmount}

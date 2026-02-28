@@ -5,11 +5,29 @@ import { Button } from '@/components/ui/Button';
 import { Modal } from '@/components/ui/Modal';
 import { Download, Upload, RotateCcw, AlertTriangle } from 'lucide-react';
 
+const CURRENCY_OPTIONS = [
+  { value: 'USD', label: 'US Dollar (USD)' },
+  { value: 'PHP', label: 'Philippine Peso (PHP)' },
+  { value: 'EUR', label: 'Euro (EUR)' },
+  { value: 'GBP', label: 'British Pound (GBP)' },
+  { value: 'JPY', label: 'Japanese Yen (JPY)' },
+  { value: 'CAD', label: 'Canadian Dollar (CAD)' },
+  { value: 'AUD', label: 'Australian Dollar (AUD)' },
+  { value: 'NZD', label: 'New Zealand Dollar (NZD)' },
+  { value: 'SGD', label: 'Singapore Dollar (SGD)' },
+  { value: 'HKD', label: 'Hong Kong Dollar (HKD)' },
+  { value: 'CNY', label: 'Chinese Yuan (CNY)' },
+  { value: 'INR', label: 'Indian Rupee (INR)' },
+  { value: 'AED', label: 'UAE Dirham (AED)' },
+  { value: 'SAR', label: 'Saudi Riyal (SAR)' },
+];
+
 export function Settings() {
-  const { exportData, importData, resetData } = useAppData();
+  const { data, updateSettings, exportData, importData, resetData } = useAppData();
   const fileInputRef = useRef(null);
   const [importResult, setImportResult] = useState(null); // 'success' | 'error' | null
   const [resetModalOpen, setResetModalOpen] = useState(false);
+  const currency = data.settings?.currency || 'USD';
 
   const handleExport = () => {
     const blob = new Blob([exportData()], { type: 'application/json' });
@@ -39,8 +57,36 @@ export function Settings() {
     setResetModalOpen(false);
   };
 
+  const handleCurrencyChange = (e) => {
+    updateSettings({ currency: e.target.value });
+  };
+
   return (
     <div className="space-y-8">
+      <Card>
+        <CardHeader title="Preferences" />
+        <CardContent className="space-y-2">
+          <label htmlFor="currency" className="block text-sm font-medium text-content">
+            Currency
+          </label>
+          <select
+            id="currency"
+            value={currency}
+            onChange={handleCurrencyChange}
+            className="w-full rounded-lg border border-border bg-surface px-3 py-2 text-content transition-colors focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20"
+          >
+            {CURRENCY_OPTIONS.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+          <p className="text-sm text-content-muted">
+            Amounts across your dashboard will use this currency.
+          </p>
+        </CardContent>
+      </Card>
+
       <Card>
         <CardHeader title="Data" />
         <CardContent className="space-y-4">

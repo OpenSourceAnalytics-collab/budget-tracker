@@ -10,8 +10,30 @@ function generateId() {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
 }
 
+function normalizeAppData(raw) {
+  const safe = raw && typeof raw === 'object' ? raw : {};
+  const safeBudget = safe.budget && typeof safe.budget === 'object' ? safe.budget : {};
+
+  return {
+    ...DEFAULT_APP_DATA,
+    ...safe,
+    settings: {
+      ...DEFAULT_APP_DATA.settings,
+      ...(safe.settings && typeof safe.settings === 'object' ? safe.settings : {}),
+    },
+    budget: {
+      ...DEFAULT_APP_DATA.budget,
+      ...safeBudget,
+      categories: Array.isArray(safeBudget.categories) ? safeBudget.categories : [],
+    },
+    savings: Array.isArray(safe.savings) ? safe.savings : [],
+    debt: Array.isArray(safe.debt) ? safe.debt : [],
+  };
+}
+
 export function AppDataProvider({ children }) {
-  const [data, setData] = useLocalStorage(STORAGE_KEY, DEFAULT_APP_DATA);
+  const [rawData, setData] = useLocalStorage(STORAGE_KEY, DEFAULT_APP_DATA);
+  const data = normalizeAppData(rawData);
 
   const updateBudget = useCallback(
     (payload) => {
@@ -22,6 +44,26 @@ export function AppDataProvider({ children }) {
             ? payload(prev.budget)
             : { ...prev.budget, ...payload },
       }));
+    },
+    [setData],
+  );
+
+  const updateSettings = useCallback(
+    (payload) => {
+      setData((prev) => {
+        const currentSettings =
+          prev.settings && typeof prev.settings === 'object'
+            ? prev.settings
+            : DEFAULT_APP_DATA.settings;
+
+        return {
+          ...prev,
+          settings:
+            typeof payload === 'function'
+              ? payload(currentSettings)
+              : { ...currentSettings, ...payload },
+        };
+      });
     },
     [setData],
   );
@@ -141,7 +183,7 @@ export function AppDataProvider({ children }) {
           parsed.budget &&
           Array.isArray(parsed.budget.categories)
         ) {
-          setData(parsed);
+          setData(normalizeAppData(parsed));
           return true;
         }
       } catch {
@@ -157,6 +199,7 @@ export function AppDataProvider({ children }) {
   const value = {
     data,
     setData,
+    updateSettings,
     updateBudget,
     addCategory,
     updateCategory,
